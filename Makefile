@@ -1,10 +1,14 @@
 # Makefile for the Go project
 
 # PHONY targets ensure that make always runs these commands
-.PHONY: all build test fmt lint clean
+.PHONY: all build test fmt vet clean
 
 # 'all' runs formatting, linting, tests, and then builds the binary.
-all: fmt lint test build
+all: vet fmt run
+
+run:
+	@echo "Runing app..."
+	go run ./cmd/main.go -op=list
 
 # Build the binary from the main package.
 build:
@@ -22,10 +26,9 @@ fmt:
 	go fmt ./...
 
 # Lint the code.
-# Uncomment the lint line if you have golangci-lint installed.
-lint:
+vet:
 	@echo "Running lint checks..."
-	# golangci-lint run
+	go vet ./...
 
 # Clean up build artifacts.
 clean:

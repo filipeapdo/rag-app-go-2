@@ -1,0 +1,5 @@
+*.bkp
+
+# to be removed
+config
+README.md
