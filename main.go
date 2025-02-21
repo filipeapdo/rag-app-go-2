@@ -84,27 +84,15 @@ func queryVectorDB(queryEmbedding []float32, top uint64) ([]QdrantSearchResult, 
 		return nil, err
 	}
 
-	// fmt.Println(queryResult)
+	// fmt.Println(queryResult["payload"])
 
-	// queryResultJson, err := json.Marshal(queryResult)
-	// if err != nil {
-	// 	return nil, err
-	// }
-
-	// Create a variable to hold the decoded data
-	var response QdrantResponse
-
-	// Unmarshal the JSON into the struct
-	err = json.Unmarshal([]byte(string(queryResult)), &response)
-	if err != nil {
-		fmt.Println("Error decoding JSON:", err)
-		return nil, err
-	}
-
-	for _, item := range response {
+	// TO-DO: create a []type to reender the queryResult
+	for _, item := range queryResult {
+		plValue := item.Payload["text"]
+		strValeu := plValue.GetStringValue()
 		fmt.Println()
-		fmt.Println(item)
-		fmt.Println()
+		fmt.Println(strValeu)
+		fmt.Println(item.Score)
 		fmt.Println()
 	}
 
