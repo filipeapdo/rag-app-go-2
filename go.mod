@@ -2,7 +2,11 @@ module github.com/filipeapdo/rag-app-go
 
 go 1.24.0
 
-require github.com/qdrant/go-client v1.13.0
+require (
+	github.com/google/uuid v1.6.0
+	github.com/ollama/ollama v0.5.11
+	github.com/qdrant/go-client v1.13.0
+)
 
 require (
 	golang.org/x/net v0.28.0 // indirect

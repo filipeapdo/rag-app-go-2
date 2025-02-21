@@ -1,0 +1,154 @@
+package main
+
+import (
+	"context"
+	"flag"
+	"log/slog"
+	"os"
+	"time"
+
+	"github.com/qdrant/go-client/qdrant"
+)
+
+const (
+	qdrantHost     = "localhost"
+	qdrantGrdpPort = 6334
+	vectorSize     = 1536 // Adjust based on your embedding model
+)
+
+func connectQdrant() (*qdrant.Client, error) {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	logger.Info("Initializing Qdrant client...")
+	client, err := qdrant.NewClient(&qdrant.Config{
+		Host: qdrantHost,
+		Port: qdrantGrdpPort,
+	})
+	if err != nil {
+		logger.Error("Failed to create Qdrant client", "error", err)
+		return nil, err
+	}
+
+	logger.Info("✅ Qdrant client successfully initialized")
+	return client, nil
+}
+
+func createCollection(client *qdrant.Client, collection string) error {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	logger.Info("Creating collection in Qdrant...", "collection", collection)
+	err := client.CreateCollection(ctx, &qdrant.CreateCollection{
+		CollectionName: collection,
+		VectorsConfig: qdrant.NewVectorsConfig(&qdrant.VectorParams{
+			Size:     vectorSize,
+			Distance: qdrant.Distance_Cosine,
+		}),
+	})
+	if err != nil {
+		logger.Error("Failed to create collection", "error", err)
+		return err
+	}
+
+	logger.Info("✅ Collection created successfully", "collection", collection)
+	return nil
+}
+
+func deleteCollection(client *qdrant.Client, collection string) error {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	logger.Info("Deleting collection in Qdrant...", "collection", collection)
+	err := client.DeleteCollection(ctx, collection)
+	if err != nil {
+		logger.Error("Failed to delete collection", "error", err)
+		return err
+	}
+
+	logger.Info("✅ Collection deleted successfully", "collection", collection)
+	return nil
+}
+
+func listCollections(client *qdrant.Client) error {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	logger.Info("Listing collections in Qdrant...")
+	collections, err := client.ListCollections(ctx)
+	if err != nil {
+		logger.Error("Failed to list collections", "error", err)
+		return err
+	}
+
+	if len(collections) == 0 {
+		logger.Info("No collections found")
+		return nil
+	}
+
+	for _, collection := range collections {
+		logger.Info("Collection found", "name", collection)
+	}
+	return nil
+}
+
+func main() {
+	operation := flag.String("op", "", "Operation to perform: create, delete, list, update")
+	collection := flag.String("collection", "", "Name of the collection (required for create, delete, update)")
+	flag.Parse()
+
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	client, err := connectQdrant()
+	if err != nil {
+		logger.Error("Application startup failed", "error", err)
+		os.Exit(1)
+	}
+
+	if *operation == "" {
+		logger.Error("No operation specified. Use -op=create, -op=delete, -op=list, or -op=update")
+		os.Exit(1)
+	}
+
+	switch *operation {
+	case "create":
+		if *collection == "" {
+			logger.Error("Collection name is required for create operation")
+			os.Exit(1)
+		}
+		if err := createCollection(client, *collection); err != nil {
+			logger.Error("Failed to create collection", "error", err)
+			os.Exit(1)
+		}
+	case "delete":
+		if *collection == "" {
+			logger.Error("Collection name is required for delete operation")
+			os.Exit(1)
+		}
+		if err := deleteCollection(client, *collection); err != nil {
+			logger.Error("Failed to delete collection", "error", err)
+			os.Exit(1)
+		}
+	case "list":
+		if err := listCollections(client); err != nil {
+			logger.Error("Failed to list collections", "error", err)
+			os.Exit(1)
+		}
+	// case "update":
+	// 	if *collection == "" {
+	// 		logger.Error("Collection name is required for update operation")
+	// 		os.Exit(1)
+	// 	}
+	// 	if err := updateCollection(client, *collection); err != nil {
+	// 		logger.Error("Failed to update collection", "error", err)
+	// 		os.Exit(1)
+	// 	}
+	default:
+		logger.Error("Invalid operation. Use -op=create, -op=delete, -op=list, or -op=update")
+		os.Exit(1)
+	}
+}

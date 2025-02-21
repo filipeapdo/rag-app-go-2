@@ -7,7 +7,7 @@ import (
 )
 
 func NewClient(qdrantHost string, qdrantGrpcPort int) (*qdrant.Client, error) {
-	slog.Info("Initializing Qdrant client...")
+	// slog.Info("Initializing Qdrant client...")
 	client, err := qdrant.NewClient(&qdrant.Config{
 		Host: qdrantHost,
 		Port: qdrantGrpcPort,
@@ -17,6 +17,6 @@ func NewClient(qdrantHost string, qdrantGrpcPort int) (*qdrant.Client, error) {
 		return nil, err
 	}
 
-	slog.Info("✅ Qdrant client successfully initialized")
+	// slog.Info("✅ Qdrant client successfully initialized")
 	return client, nil
 }

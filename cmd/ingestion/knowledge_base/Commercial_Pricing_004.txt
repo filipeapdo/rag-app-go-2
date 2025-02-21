@@ -1,0 +1,23 @@
+Product SKU: 1004
+Product Name: HyperWidget
+Description: The HyperWidget is engineered for extreme conditions, delivering top-notch performance in the most demanding environments.
+Current Price: $70.00
+
+Pricing Tiers:
+- 1-10 units: $70.00 each
+- 11-50 units: $67.00 each
+- 51-100 units: $64.00 each
+- 101+ units: $60.00 each
+
+Bulk Purchase Discounts:
+- Orders over 500 units receive an additional 10% discount.
+- Orders over 1000 units receive an additional 18% discount.
+
+Product Specifications:
+- Weight: 3.0 lbs
+- Dimensions: 16 x 8 x 6 inches
+- Material: Carbon fiber composite
+- Color Options: Jet Black, Graphite
+
+Warranty Information:
+- 5

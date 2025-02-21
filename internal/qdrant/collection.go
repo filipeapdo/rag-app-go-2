@@ -20,7 +20,7 @@ func CreateCollection(client *qdrant.Client, config CollectionConfig) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	slog.Info("Creating collection in Qdrant...", "collection", config.Name)
+	// slog.Info("Creating collection in Qdrant...", "collection", config.Name)
 	err := client.CreateCollection(ctx, &qdrant.CreateCollection{
 		CollectionName: config.Name,
 		VectorsConfig: qdrant.NewVectorsConfig(&qdrant.VectorParams{
@@ -33,7 +33,7 @@ func CreateCollection(client *qdrant.Client, config CollectionConfig) error {
 		return err
 	}
 
-	slog.Info("✅ Collection created successfully", "collection", config.Name)
+	// slog.Info("✅ Collection created successfully", "collection", config.Name)
 	return nil
 }
 
@@ -42,14 +42,14 @@ func DeleteCollection(client *qdrant.Client, collection string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	slog.Info("Deleting collection in Qdrant...", "collection", collection)
+	// slog.Info("Deleting collection in Qdrant...", "collection", collection)
 	err := client.DeleteCollection(ctx, collection)
 	if err != nil {
 		slog.Error("Failed to delete collection", "error", err)
 		return err
 	}
 
-	slog.Info("✅ Collection deleted successfully", "collection", collection)
+	// slog.Info("✅ Collection deleted successfully", "collection", collection)
 	return nil
 }
 
@@ -58,7 +58,7 @@ func ListCollections(client *qdrant.Client) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	slog.Info("Listing collections in Qdrant...")
+	// slog.Info("Listing collections in Qdrant...")
 	collections, err := client.ListCollections(ctx)
 	if err != nil {
 		slog.Error("Failed to list collections", "error", err)
@@ -66,13 +66,13 @@ func ListCollections(client *qdrant.Client) error {
 	}
 
 	if len(collections) == 0 {
-		slog.Info("No Collections found")
+		// slog.Info("No Collections found")
 		return nil
 	}
 
 	for _, collection := range collections {
 		slog.Info("Collection found", "name", collection)
 	}
-	slog.Info("✅ All Collections listed successfully")
+	// slog.Info("✅ All Collections listed successfully")
 	return nil
 }
